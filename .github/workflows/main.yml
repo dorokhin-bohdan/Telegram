@@ -82,16 +82,6 @@ jobs:
           cp app.apk "artifact/ForkClient $(cat ver.txt)${{ matrix.name }}.apk"
           mkdir -p tag_asset
           cp app.apk "tag_asset/ForkClient_$(cat ver.txt)${{ matrix.name }}.apk"
-
-          # Upload to channel.
-          set +x
-          pip install requests tgcrypto-pyrofork Kurigram
-          cp app.apk "ForkClient $(cat ver.txt)${{ matrix.name }}.apk"
-          echo "${{ secrets.BASE64_ZIP }}" | base64 --decode > output.zip
-          unzip -j output.zip -d .
-          ls
-          python3 upload.py
-          set -x
           ###
 
           echo "NEW_TAG_TEXT=$(cat ver.txt)" >> $GITHUB_ENV
@@ -99,7 +89,7 @@ jobs:
           tempVer=$(cat ver.txt)
           tempVer=${tempVer::-2}
           echo "NEW_OFFICIAL_TAG_TEXT=$tempVer" >> $GITHUB_ENV
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v4
         name: Upload artifact
         with:
           name: ForkClient-${{ matrix.type }}
