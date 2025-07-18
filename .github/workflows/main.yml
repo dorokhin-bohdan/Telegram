@@ -8,12 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        type: [debug, release]
+        type: [release]
         include:
-          - type: debug
-            afat: assembleAfatDebug
-            name: ""
-            updates: 1
           - type: release
             afat: assembleAfatRelease
             name: " compressed"
@@ -66,7 +62,6 @@ jobs:
           echo "ADDITIONAL_BUILD_NUMBER=$ADDITIONAL_BUILD_NUMBER" >> $vars
           echo "USER_REPO=$USER_REPO" >> $vars
           echo "CHECK_UPDATES=${{ matrix.updates }}" >> $vars
-          ### echo "USER_ID_OWNER=${{ secrets.USER_ID_OWNER }}" >> $vars
 
           ###
           echo $ADDITIONAL_BUILD_NUMBER
@@ -74,8 +69,7 @@ jobs:
           sudo apt -y install ninja-build meson unzip pip gperf
           ./gradlew :TMessagesProj_App:${{ matrix.afat }}
 
-          #grep BUILD_VERSION_STRING TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java | cut -d'"' -f 2 > ver.txt
-          grep VERSION_NAME TMessagesProj/build/generated/source/buildConfig/${{ matrix.type }}/org/telegram/messenger/BuildConfig.java | cut -d'"' -f 2 > ver.txt
+          grep BUILD_VERSION_STRING TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java | cut -d'"' -f 2 > ver.txt
 
           mkdir -p artifact
           mv TMessagesProj_App/build/outputs/apk/afat/${{ matrix.type }}/app.apk app.apk
@@ -101,11 +95,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download debug artifact
-        uses: actions/download-artifact@v4.3.0
-        with:
-          name: ForkClient-debug
-          path: debug_asset
       - name: Download release artifact
         uses: actions/download-artifact@v4.3.0
         with:
@@ -113,7 +102,7 @@ jobs:
           path: release_asset
       - name: Get version info
         run: |
-          find debug_asset -name "*.apk" | head -1 | sed 's/.*ForkClient //;s/\.apk//' > version.txt
+          find release_asset -name "*.apk" | head -1 | sed 's/.*ForkClient //;s/\.apk//' > version.txt
           echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
           echo "OFFICIAL_VERSION=$(cat version.txt | sed 's/..$//')" >> $GITHUB_ENV
       - name: Create Release
@@ -123,7 +112,6 @@ jobs:
         with:
           draft: true
           files: |
-            debug_asset/*
             release_asset/*
           tag_name: ${{ env.VERSION }}
           name: "ForkClient ${{ env.VERSION }}"
