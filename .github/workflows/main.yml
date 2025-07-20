@@ -128,17 +128,22 @@ jobs:
         with:
           name: TelegramClient-release
           path: release_asset
-      - name: send message
+      - name: Get version info
+        run: |
+          find release_asset -name "*.apk" | head -1 | sed 's/.*TelegramClient //;s/\.apk//' > version.txt
+          echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+          echo "OFFICIAL_VERSION=$(cat version.txt | sed 's/..$//')" >> $GITHUB_ENV
+      - name: Send notification
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            TelegramClient ${{ env.NEW_TAG_TEXT }}
+            TelegramClient ${{ env.VERSION }}
 
             Commit message: ${{ github.event.commits[0].message }}
 
             Repository: ${{ github.repository }}
 
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
-          document: release_asset/TelegramClient ${{ env.NEW_TAG_TEXT }}.apk
+          document: release_asset/TelegramClient ${{ env.VERSION }}.apk
