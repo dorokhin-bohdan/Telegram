@@ -93,14 +93,14 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            TelegramClient $(cat ver.txt)
+            TelegramClient ${{ env.NEW_TAG_TEXT }}
             
             Commit message: ${{ github.event.commits[0].message }}
             
             Repository: ${{ github.repository }}
             
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
-          document: artifact/TelegramClient $(cat ver.txt)${{ matrix.name }}.apk
+          document: artifact/TelegramClient ${{ env.NEW_TAG_TEXT }}${{ matrix.name }}.apk
 
 
   release:
