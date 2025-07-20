@@ -1,4 +1,4 @@
-name: Fork Client
+name: Build Client
 
 on: [push]
 
@@ -72,9 +72,9 @@ jobs:
 
           mkdir -p artifact
           mv TMessagesProj_App/build/outputs/apk/afat/${{ matrix.type }}/app.apk app.apk
-          cp app.apk "artifact/ForkClient $(cat ver.txt)${{ matrix.name }}.apk"
+          cp app.apk "artifact/TelegramClient $(cat ver.txt)${{ matrix.name }}.apk"
           mkdir -p tag_asset
-          cp app.apk "tag_asset/ForkClient_$(cat ver.txt)${{ matrix.name }}.apk"
+          cp app.apk "tag_asset/TelegramClient_$(cat ver.txt)${{ matrix.name }}.apk"
           ###
 
           echo "NEW_TAG_TEXT=$(cat ver.txt)" >> $GITHUB_ENV
@@ -85,8 +85,23 @@ jobs:
       - uses: actions/upload-artifact@v4
         name: Upload artifact
         with:
-          name: ForkClient-${{ matrix.type }}
+          name: TelegramClient-${{ matrix.type }}
           path: artifact/
+      - uses: appleboy/telegram-action@master
+        name: Upload artifacts to the channel
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            TelegramClient $(cat ver.txt)
+            
+            Commit message: ${{ github.event.commits[0].message }}
+            
+            Repository: ${{ github.repository }}
+            
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+          document: artifact/TelegramClient $(cat ver.txt)${{ matrix.name }}.apk
+
 
   release:
     name: Create Release.
@@ -97,11 +112,11 @@ jobs:
       - name: Download release artifact
         uses: actions/download-artifact@v4.3.0
         with:
-          name: ForkClient-release
+          name: TelegramClient-release
           path: release_asset
       - name: Get version info
         run: |
-          find release_asset -name "*.apk" | head -1 | sed 's/.*ForkClient //;s/\.apk//' > version.txt
+          find release_asset -name "*.apk" | head -1 | sed 's/.*TelegramClient //;s/\.apk//' > version.txt
           echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
           echo "OFFICIAL_VERSION=$(cat version.txt | sed 's/..$//')" >> $GITHUB_ENV
       - name: Create Release
@@ -113,5 +128,5 @@ jobs:
           files: |
             release_asset/*
           tag_name: ${{ env.VERSION }}
-          name: "ForkClient ${{ env.VERSION }}"
+          name: "TelegramClient ${{ env.VERSION }}"
           body: "— Updated to ${{ env.OFFICIAL_VERSION }} build of the official Telegram."
