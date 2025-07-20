@@ -12,7 +12,7 @@ jobs:
         include:
           - type: release
             afat: assembleAfatRelease
-            name: " compressed"
+            name: ""
             updates: 1
     steps:
       - uses: actions/checkout@v4
@@ -87,20 +87,6 @@ jobs:
         with:
           name: TelegramClient-${{ matrix.type }}
           path: artifact/
-      - uses: appleboy/telegram-action@master
-        name: Upload artifacts to the channel
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            TelegramClient ${{ env.NEW_TAG_TEXT }}
-            
-            Commit message: ${{ github.event.commits[0].message }}
-            
-            Repository: ${{ github.repository }}
-            
-            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
-          document: artifact/TelegramClient ${{ env.NEW_TAG_TEXT }}${{ matrix.name }}.apk
 
 
   release:
@@ -130,3 +116,29 @@ jobs:
           tag_name: ${{ env.VERSION }}
           name: "TelegramClient ${{ env.VERSION }}"
           body: "— Updated to ${{ env.OFFICIAL_VERSION }} build of the official Telegram."
+
+  notify:
+    name: Send message to Telegram
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download release artifact
+        uses: actions/download-artifact@v4.3.0
+        with:
+          name: TelegramClient-release
+          path: release_asset
+      - name: send message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            TelegramClient ${{ env.NEW_TAG_TEXT }}
+
+            Commit message: ${{ github.event.commits[0].message }}
+
+            Repository: ${{ github.repository }}
+
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+          document: release_asset/TelegramClient ${{ env.NEW_TAG_TEXT }}.apk
