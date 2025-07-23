@@ -147,3 +147,4 @@ jobs:
 
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
           document: release_asset/TelegramClient ${{ env.VERSION }}.apk
+          socks5: ${{ secrets.SOCKS5 }}
