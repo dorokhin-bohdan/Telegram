@@ -152,6 +152,10 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
       - name: Send notification
         run: |
-          python Tools/upload.py "${{ secrets.TELEGRAM_BOT_TOKEN }}" "${{ secrets.TELEGRAM_CHAT_ID }}" "release_asset/TelegramClient ${{ env.VERSION }}.apk" "$CAPTION"
+          python Tools/upload.py "${{ env.TELEGRAM_BOT_TOKEN }}" "${{ env.TELEGRAM_CHAT_ID }}" "release_asset/TelegramClient ${{ env.VERSION }}.apk" "${{ env.TELEGRAM_BOT_ENDPOINT }}" "$CAPTION"
         env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          VERSION: ${{ env.VERSION }}
+          TELEGRAM_BOT_ENDPOINT: ${{ secrets.TELEGRAM_BOT_ENDPOINT }}
           CAPTION: ${{ env.CAPTION }}
