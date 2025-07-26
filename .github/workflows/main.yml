@@ -133,18 +133,25 @@ jobs:
           find release_asset -name "*.apk" | head -1 | sed 's/.*TelegramClient //;s/\.apk//' > version.txt
           echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
           echo "OFFICIAL_VERSION=$(cat version.txt | sed 's/..$//')" >> $GITHUB_ENV
-      - name: Send notification
-        uses: appleboy/telegram-action@master
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            TelegramClient ${{ env.VERSION }}
-
-            Commit message: ${{ github.event.commits[0].message }}
-
-            Repository: ${{ github.repository }}
-
-            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
-          document: release_asset/TelegramClient ${{ env.VERSION }}.apk
-          socks5: ${{ secrets.SOCKS5 }}
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install python-telegram-bot python-telegram-bot[httpx]
+      - name: Define multiline caption
+        run: |
+          echo "CAPTION<<EOF" >> $GITHUB_ENV
+          echo "🚀Release Custom Telegram Client ${{ env.VERSION }}" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "📄Commit message: ${{ github.event.commits[0].message }}" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "Repository: ${{ github.repository }}" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      - name: Send notification
+        run: |
+          python Tools/upload.py "${{ secrets.TELEGRAM_BOT_TOKEN }}" "${{ secrets.TELEGRAM_CHAT_ID }}" "release_asset/TelegramClient ${{ env.VERSION }}.apk" "$CAPTION"
+        env:
+          CAPTION: ${{ env.CAPTION }}
