@@ -70,6 +70,7 @@ dependencies {
 
 def proj_tg_app_id = Integer.parseInt(APP_ID)
 def proj_tg_app_hash = APP_HASH
+def proj_tg_google_auth_client_id = GOOGLE_AUTH_CLIENT_ID
 
 def isWindows = String.valueOf(DefaultNativePlatform.currentOperatingSystem.toFamilyName() == OperatingSystemFamily.WINDOWS)
 android {
@@ -109,6 +110,7 @@ android {
 
         buildConfigField 'int', 'APP_ID', "$proj_tg_app_id"
         buildConfigField 'String', 'APP_HASH', "\"$proj_tg_app_hash\""
+        buildConfigField 'String', 'GOOGLE_AUTH_CLIENT_ID', "\"$proj_tg_google_auth_client_id\""
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
 
