@@ -38,14 +38,6 @@ jobs:
         with:
           ndk-version: r23c
           link-to-sdk: true
-      - name: Prepare additional build number.
-        env:
-          ADDITIONAL_BUILD: ${{ secrets.ADDITIONAL_BUILD_NUMBER }}
-        run: |
-          result=$((ADDITIONAL_BUILD / 10000))
-          echo "ADDITIONAL_BUILD_NUMBER = $result should be between 0 and 10!"
-          echo "ADDITIONAL_BUILD_NUMBER=$result" >> $GITHUB_ENV
-          echo "CHECK_UPDATES=${{ matrix.updates }}" >> $GITHUB_ENV
       - name: Build.
         run: |
           ###
@@ -57,7 +49,7 @@ jobs:
           echo "RELEASE_KEY_PASSWORD=${{ secrets.ALIAS_PASS }}" >> $vars
           echo "RELEASE_KEY_ALIAS=${{ secrets.ALIAS_NAME }}" >> $vars
           echo "RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PASS }}" >> $vars
-          echo "CHECK_UPDATES=${{ matrix.updates }}" >> $vars
+          echo "GOOGLE_AUTH_CLIENT_ID=${{ secrets.GOOGLE_AUTH_CLIENT_ID }}" >> $vars
 
           ###
           sudo apt update

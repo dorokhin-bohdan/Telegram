@@ -7,14 +7,14 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:130527754080:android:0900de5ed7211fd2a49005",
+        "mobilesdk_app_id": "1:130527754080:android:2ceabc7a35c67284a49005",
         "android_client_info": {
           "package_name": "org.freegram.messenger"
         }
       },
       "oauth_client": [
         {
-          "client_id": "130527754080-9lbbbcdg3fpq90i8pid0iokqt3l6nbtv.apps.googleusercontent.com",
+          "client_id": "130527754080-7icm3nq6eur8jd91nv93t2l5isjl0iu1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "org.freegram.messenger",
@@ -28,7 +28,10 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBiuWbF71UlZlEUP0EnyL_3UuHh4FEIvrk"
+          "current_key": "AIzaSyCG-tzm5c2eaJC1EXLn8TSr--uIkFkUsfY"
+        },
+        {
+          "current_key": "AIzaSyAcBiFbEDKEDKdiBzFAH3kAto2X1bnmLyI"
         }
       ],
       "services": {
@@ -44,14 +47,14 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:130527754080:android:56c6b350c701541ea49005",
+        "mobilesdk_app_id": "1:130527754080:android:8858f590c2948014a49005",
         "android_client_info": {
           "package_name": "org.freegram.messenger.beta"
         }
       },
       "oauth_client": [
         {
-          "client_id": "130527754080-mr8sj53e0o2s986m7fknacl1qebst31n.apps.googleusercontent.com",
+          "client_id": "130527754080-tp5pqnmj41tadfq2l1lipn5ais0q2ga7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "org.freegram.messenger.beta",
@@ -65,7 +68,90 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBiuWbF71UlZlEUP0EnyL_3UuHh4FEIvrk"
+          "current_key": "AIzaSyCG-tzm5c2eaJC1EXLn8TSr--uIkFkUsfY"
+        },
+        {
+          "current_key": "AIzaSyAcBiFbEDKEDKdiBzFAH3kAto2X1bnmLyI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130527754080-6kqj3jfgvnprmocj0kpdgn6hqgqur1lr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130527754080:android:9800f328d2d92bdba49005",
+        "android_client_info": {
+          "package_name": "org.telegram.messenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "130527754080-aso7lekf1ngjm6q646igd3e0l7qb5v55.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.telegram.messenger",
+            "certificate_hash": "fbf679a836b67ab183b7145388a10b9e0b1b95e0"
+          }
+        },
+        {
+          "client_id": "130527754080-6kqj3jfgvnprmocj0kpdgn6hqgqur1lr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCG-tzm5c2eaJC1EXLn8TSr--uIkFkUsfY"
+        },
+        {
+          "current_key": "AIzaSyAcBiFbEDKEDKdiBzFAH3kAto2X1bnmLyI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130527754080-6kqj3jfgvnprmocj0kpdgn6hqgqur1lr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130527754080:android:81f712b2cad8e73fa49005",
+        "android_client_info": {
+          "package_name": "org.telegram.messenger.beta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "130527754080-090oocjklcg4ks9nbjs078u2giq0m66n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.telegram.messenger.beta",
+            "certificate_hash": "fbf679a836b67ab183b7145388a10b9e0b1b95e0"
+          }
+        },
+        {
+          "client_id": "130527754080-6kqj3jfgvnprmocj0kpdgn6hqgqur1lr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCG-tzm5c2eaJC1EXLn8TSr--uIkFkUsfY"
+        },
+        {
+          "current_key": "AIzaSyAcBiFbEDKEDKdiBzFAH3kAto2X1bnmLyI"
         }
       ],
       "services": {
