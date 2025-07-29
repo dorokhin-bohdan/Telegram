@@ -111,6 +111,8 @@ android {
         buildConfigField 'String', 'APP_HASH', "\"$proj_tg_app_hash\""
         buildConfigField 'String', 'GOOGLE_AUTH_CLIENT_ID', "\"$GOOGLE_AUTH_CLIENT_ID\""
 
+        manifestPlaceholders = [ MAPS_API_KEY: MAPS_API_KEY ]
+
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
 
         multiDexEnabled true

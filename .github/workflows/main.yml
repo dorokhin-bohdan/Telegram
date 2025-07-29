@@ -50,6 +50,10 @@ jobs:
           echo "RELEASE_KEY_ALIAS=${{ secrets.ALIAS_NAME }}" >> $vars
           echo "RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PASS }}" >> $vars
           echo "GOOGLE_AUTH_CLIENT_ID=${{ secrets.GOOGLE_AUTH_CLIENT_ID }}" >> $vars
+          echo "MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}" >> $vars
+
+          # Decode google-services.json
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > TMessagesProj/google-services.json
 
           ###
           sudo apt update
