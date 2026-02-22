@@ -170,6 +170,21 @@ public class UniversalRecyclerView extends RecyclerListView {
                 if (hasSections()) invalidate();
                 onLayoutUpdate();
             }
+            @Override
+            protected void onRemoveAnimationUpdate(ViewHolder holder) {
+                super.onRemoveAnimationUpdate(holder);
+                if (hasSections()) invalidate();
+            }
+            @Override
+            protected void onAddAnimationUpdate(ViewHolder holder) {
+                super.onAddAnimationUpdate(holder);
+                if (hasSections()) invalidate();
+            }
+            @Override
+            protected void onChangeAnimationUpdate(ViewHolder holder) {
+                super.onChangeAnimationUpdate(holder);
+                if (hasSections()) invalidate();
+            }
         };
         itemAnimator.setSupportsChangeAnimations(false);
         itemAnimator.setDelayAnimations(false);
