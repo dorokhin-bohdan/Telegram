@@ -8,6 +8,8 @@
 
 package org.telegram.messenger;
 
+import static org.telegram.messenger.AndroidUtilities.find;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
