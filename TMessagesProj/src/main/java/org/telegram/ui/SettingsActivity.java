@@ -60,8 +60,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.common.collect.Lists;
-
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -82,7 +80,6 @@ import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
-import org.telegram.messenger.SharedPrefsHelper;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.browser.Browser;
@@ -93,7 +90,6 @@ import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.SettingsSearchCell;
@@ -141,9 +137,7 @@ import org.telegram.ui.bots.SetupEmojiStatusSheet;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -300,7 +294,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 if (id == -1) {
                     finishFragment();
                 } else if (id == 2) {
-                    presentSettingFragment(new LogoutActivity());
+                    presentFragment(new LogoutActivity());
                 }
             }
         });
@@ -751,22 +745,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         items.add(UItem.asCustomShadow(versionView));
     }
 
-    private void presentSettingFragment(BaseFragment fragment) {
-        if (AndroidUtilities.isTablet() && LaunchActivity.instance != null && LaunchActivity.instance.getRightActionBarLayout() != null) {
-            final INavigationLayout layout = LaunchActivity.instance.getRightActionBarLayout();
-            if (!layout.getFragmentStack().isEmpty()) {
-                for (int a = 0; a < layout.getFragmentStack().size() - 1; a++) {
-                    layout.removeFragmentFromStack(layout.getFragmentStack().get(0));
-                    a--;
-                }
-                layout.closeLastFragment(false);
-            }
-            layout.presentFragment(new INavigationLayout.NavigationParams(fragment).setNoAnimation(true).forceRightLayout());
-        } else {
-            presentFragment(fragment);
-        }
-    }
-
     private void onClick(UItem item, View view, int position, float x, float y) {
         if (item.object instanceof TLRPC.TL_attachMenuBot) {
             TLRPC.TL_attachMenuBot attachMenuBot = (TLRPC.TL_attachMenuBot) item.object;
@@ -808,44 +786,44 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }
         switch (item.id) {
             case 1:
-                presentSettingFragment(new UserInfoActivity());
+                presentFragment(new UserInfoActivity());
                 break;
             case 2:
-                presentSettingFragment(new ThemeActivity(ThemeActivity.THEME_TYPE_BASIC));
+                presentFragment(new ThemeActivity(ThemeActivity.THEME_TYPE_BASIC));
                 break;
             case 3:
-                presentSettingFragment(new PrivacySettingsActivity());
+                presentFragment(new PrivacySettingsActivity());
                 break;
             case 5:
-                presentSettingFragment(new NotificationsSettingsActivity());
+                presentFragment(new NotificationsSettingsActivity());
                 break;
             case 6:
-                presentSettingFragment(new DataSettingsActivity());
+                presentFragment(new DataSettingsActivity());
                 break;
             case 7:
-                presentSettingFragment(new FiltersSetupActivity());
+                presentFragment(new FiltersSetupActivity());
                 break;
             case 8:
-                presentSettingFragment(new SessionsActivity(0));
+                presentFragment(new SessionsActivity(0));
                 break;
             case 9:
-                presentSettingFragment(new LiteModeSettingsActivity());
+                presentFragment(new LiteModeSettingsActivity());
                 break;
             case 10:
-                presentSettingFragment(new LanguageSelectActivity());
+                presentFragment(new LanguageSelectActivity());
                 break;
 
             case 11:
-                presentSettingFragment(new PremiumPreviewFragment("settings"));
+                presentFragment(new PremiumPreviewFragment("settings"));
                 break;
             case 12:
-                presentSettingFragment(new StarsIntroActivity());
+                presentFragment(new StarsIntroActivity());
                 break;
             case 13:
-                presentSettingFragment(new TONIntroActivity());
+                presentFragment(new TONIntroActivity());
                 break;
             case 15:
-                presentSettingFragment(new PremiumPreviewFragment(PremiumPreviewFragment.FEATURES_BUSINESS, "settings"));
+                presentFragment(new PremiumPreviewFragment(PremiumPreviewFragment.FEATURES_BUSINESS, "settings"));
                 break;
             case 16:
                 UserSelectorBottomSheet.open(0, BirthdayController.getInstance(UserConfig.selectedAccount).getState());
@@ -1481,7 +1459,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 SharedPreferences.Editor editor = MessagesController.getGlobalMainSettings().edit();
                 editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("searchpostsnew").remove("speedhint").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").remove("n_0").remove("storyprvhint").remove("storyhint").remove("storyhint2").remove("storydualhint").remove("storysvddualhint").remove("stories_camera").remove("dualcam").remove("dualmatrix").remove("dual_available").remove("archivehint").remove("askNotificationsAfter").remove("askNotificationsDuration").remove("viewoncehint").remove("voicepausehint").remove("taptostorysoundhint").remove("nothanos").remove("voiceoncehint").remove("savedhint").remove("savedsearchhint").remove("savedsearchtaghint").remove("newppsms").remove("monetizationadshint").remove("seekSpeedHintShowed").remove("unsupport_video/av01").remove("statusgiftpage").remove("multistorieshint").remove("trimvoicehint").remove("taptostoryhighlighthint").remove("proxycheckstatusip").remove("callmiconstart").remove("showchattagsinfo").remove("language_showed2").remove("aihintshown").remove("savedmsgschatshint").apply();
                 HintsController.resetAll();
-                SharedPrefsHelper.cleanupAccount(currentAccount);
                 MessagesController.getEmojiSettings(currentAccount).edit().remove("featured_hidden").remove("emoji_featured_hidden").commit();
                 MessagesController.getGlobalNotificationsSettings().edit().remove("disable_sharing_learn").remove("askedAboutFSILockscreen").apply();
                 SharedConfig.textSelectionHintShows = 0;

@@ -178,8 +178,6 @@ android {
 
         manifestPlaceholders = [ MAPS_API_KEY: MAPS_API_KEY ]
 
-        manifestPlaceholders = [ MAPS_API_KEY: MAPS_API_KEY ]
-
         multiDexEnabled true
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']

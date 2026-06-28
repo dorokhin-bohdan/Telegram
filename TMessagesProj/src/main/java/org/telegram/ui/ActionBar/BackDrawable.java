@@ -16,7 +16,6 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.view.animation.DecelerateInterpolator;
 
-import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -98,13 +97,20 @@ public class BackDrawable extends Drawable {
         rotated = value;
     }
 
+    private float translationX;
+
+    public BackDrawable setTranslationX(float translationX) {
+        this.translationX = translationX;
+        return this;
+    }
+
     @Override
-    public void draw(@NonNull Canvas canvas) {
+    public void draw(Canvas canvas) {
         if (currentRotation != finalRotation) {
             if (lastFrameTime != 0) {
                 long dt = System.currentTimeMillis() - lastFrameTime;
 
-                currentAnimationTime += (int) dt;
+                currentAnimationTime += dt;
                 if (currentAnimationTime >= animationTime) {
                     currentRotation = finalRotation;
                 } else {
@@ -122,12 +128,11 @@ public class BackDrawable extends Drawable {
         paint.setColor(ColorUtils.blendARGB(color, rotatedColor, currentRotation));
 
         canvas.save();
-        canvas.translate(getIntrinsicWidth() / 2f, getIntrinsicHeight() / 2f);
+        canvas.translate(getIntrinsicWidth() / 2 + translationX, getIntrinsicHeight() / 2);
         if (arrowRotation != 0) {
             canvas.rotate(arrowRotation);
         }
         float rotation = currentRotation;
-        canvas.translate(-AndroidUtilities.dp(0.66f)/* * (rotation)*/, 0);
         if (!alwaysClose) {
             canvas.rotate(currentRotation * (reverseAngle ? -225 : 135));
         } else {

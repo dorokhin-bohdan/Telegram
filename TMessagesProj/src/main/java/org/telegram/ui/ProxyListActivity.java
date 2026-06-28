@@ -364,7 +364,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
         actionBar.setBackButtonDrawable(new BackDrawable(false));
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(getString(R.string.ProxySettings));
-        if (parentLayout != null && parentLayout.isLayersLayout()) {
+        if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);
         }
         actionBar.setAllowOverlayTitle(false);

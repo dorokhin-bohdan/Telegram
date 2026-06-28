@@ -18,8 +18,6 @@ import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
 
-import android.util.Log;
-
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedLinearLayout;
@@ -43,56 +41,21 @@ public class MainTabsLayout extends AnimatedLinearLayout {
         this.resourcesProvider = resourcesProvider;
     }
 
-    private static final float[] PASS_TEXT_SIZES_DP = {12f, 12f, 10f};
-    private static final int[] PASS_PADDINGS_DP = {16, 8, 4};
-
-    private int maxWidthPx;
-
-    public void setMaxWidth(int maxWidthPx) {
-        if (this.maxWidthPx != maxWidthPx) {
-            this.maxWidthPx = maxWidthPx;
-            requestLayout();
-        }
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width = MeasureSpec.getSize(widthMeasureSpec);
+        final int width = MeasureSpec.getSize(widthMeasureSpec);
         final int height = MeasureSpec.getSize(heightMeasureSpec);
         final int tabHeight = height - getPaddingTop() - getPaddingBottom();
 
-        if (maxWidthPx > 0 && width > maxWidthPx) {
-            width = maxWidthPx;
-        }
+        measureTabTexts();
 
         final int maxTotalWidthForTabs = width - getPaddingLeft() - getPaddingRight();
         final int minTotalWidthForTabs = Math.min(dp(320), maxTotalWidthForTabs);
+        final int tabPadding = dp(16);
 
-        int chosenPass = PASS_TEXT_SIZES_DP.length - 1;
-        float lastMeasuredTextSize = -1;
-        for (int pass = 0; pass < PASS_TEXT_SIZES_DP.length; pass++) {
-            if (PASS_TEXT_SIZES_DP[pass] != lastMeasuredTextSize) {
-                measureTabTexts(PASS_TEXT_SIZES_DP[pass]);
-                lastMeasuredTextSize = PASS_TEXT_SIZES_DP[pass];
-            }
-            final int padding = dp(PASS_PADDINGS_DP[pass]);
-            float total = 0;
-            for (int a = 0, N = getChildCount(); a < N; a++) {
-                if (!isViewVisible(getChildAt(a))) continue;
-                final float withMargin = tabsTextWidth[a] + padding * 2;
-                total += withMargin;
-            }
-            final boolean fits = total <= maxTotalWidthForTabs;
-            if (fits || pass == PASS_TEXT_SIZES_DP.length - 1) {
-                chosenPass = pass;
-                break;
-            }
-        }
+        final int minTabTextWidthIfEq = (minTotalWidthForTabs / visibleChildCount) - tabPadding * 2;
+        final int maxTabTextWidthIfEq = (maxTotalWidthForTabs / visibleChildCount) - tabPadding * 2;
 
-        applyPassTextSize(chosenPass);
-
-        final int tabPadding = dp(PASS_PADDINGS_DP[chosenPass]);
-        final int maxTabTextWidthIfEq = (maxTotalWidthForTabs / Math.max(1, visibleChildCount)) - tabPadding * 2;
 
         float totalWidth = 0;
         int totalWeight = 0;
@@ -104,8 +67,13 @@ public class MainTabsLayout extends AnimatedLinearLayout {
                 continue;
             }
 
-            tabsTextWidthWithMargin[a] = tabsTextWidth[a] + tabPadding * 2;
-            tabsWeight[a] = tabsTextWidthWithMargin[a] > (maxTabTextWidthIfEq + tabPadding * 2) ? 0 : 1;
+            final float w = tabsTextWidth[a];
+            if (w > maxTabTextWidthIfEq) {
+                tabsTextWidthWithMargin[a] = tabsTextWidth[a] + dp(13) * 2;
+            } else {
+                tabsTextWidthWithMargin[a] = tabsTextWidth[a] + dp(16) * 2;
+            }
+            tabsWeight[a] = tabsTextWidthWithMargin[a] > (maxTabTextWidthIfEq + dp(16) * 2) ? 0 : 1;
 
             totalWidth += tabsTextWidthWithMargin[a];
             totalWeight += tabsWeight[a];
@@ -127,9 +95,28 @@ public class MainTabsLayout extends AnimatedLinearLayout {
             final float growW = minTotalWidthForTabs - totalWidth;
             final float growP = growW / totalWeight;
 
+            //boolean needStage2 = false;
             for (int a = 0, N = getChildCount(); a < N; a++) {
-                tabsTextWidthWithMargin[a] += growP * tabsWeight[a];
+                final float maxGrow = maxTabTextWidthIfEq - tabsTextWidthWithMargin[a];
+                //if (tabsWeight[a] > 0 && growP * tabsWeight[a] > maxGrow) {
+                //    needStage2 = true;
+                //    tabsTextWidthWithMargin[a] = maxTabTextWidthIfEq;
+                //} else {
+                    tabsTextWidthWithMargin[a] += growP * tabsWeight[a];
+                //}
             }
+
+            /*if (needStage2) {
+                totalWidth = 0;
+                for (int a = 0, N = getChildCount(); a < N; a++) {
+                    totalWidth += tabsTextWidthWithMargin[a];
+                }
+
+                final float m = minTotalWidthForTabs / totalWidth;
+                for (int a = 0, N = getChildCount(); a < N; a++) {
+                    tabsTextWidthWithMargin[a] *= m;
+                }
+            }*/
         }
 
         int l = 0;
@@ -142,6 +129,7 @@ public class MainTabsLayout extends AnimatedLinearLayout {
             tabsLeftPos[a] = l;
             l += tabsWidth[a];
         }
+
         setMeasuredDimension(l + getPaddingLeft() + getPaddingRight(), height);
         for (int a = 0, N = getChildCount(); a < N; a++) {
             final View child = getChildAt(a);
@@ -150,13 +138,70 @@ public class MainTabsLayout extends AnimatedLinearLayout {
                 MeasureSpec.makeMeasureSpec(tabHeight, MeasureSpec.EXACTLY));
         }
 
+
+
+
+
+/*
+        if (biggestTabTextWidth > maxTabTextWidthIfEq) {
+            setMeasuredDimension(0, 0);
+
+        } else {
+            // all tabs have equal width
+
+            final int tabWidth = (Math.max(biggestTabTextWidth, minTabTextWidthIfEq) + tabPadding * 2);
+            final int measuredWidth = tabWidth * visibleChildCount + getPaddingLeft() + getPaddingRight();
+            setMeasuredDimension(measuredWidth, height);
+
+            int index = 0;
+            for (int a = 0, N = getChildCount(); a < N; a++) {
+                final View child = getChildAt(a);
+
+                child.measure(
+                    MeasureSpec.makeMeasureSpec(tabWidth, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(tabHeight, MeasureSpec.EXACTLY));
+
+                if (child.getVisibility() != View.VISIBLE) {
+                    continue;
+                }
+
+                tabsLeftPos[a] = (tabWidth * index);
+                index++;
+            }
+        }
+ */
         calculateTotalSizesAfterMeasure();
     }
 
+    /*
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        visibleHolders.clear();
+        for (int a = 0, N = getChildCount(); a < N; a++) {
+            final View view = getChildAt(a);
+            final Holder holder = viewHolders.get(view);
+
+            final int top = getPaddingTop();
+            final int left = getPaddingLeft() + tabsLeftPos[a];
+            view.layout(left, top, left + view.getMeasuredWidth(), top + view.getMeasuredHeight());
+
+            if (view.getVisibility() == VISIBLE && holder != null && holder.isVisible) {
+                visibleHolders.add(holder);
+                holder.hasInAnimator = true;
+
+                Log.i("LIST_DEBUG", "show item: " + a);
+            }
+        }
+
+        listAnimator.reset(visibleHolders, true);
+        checkViewsVisibility();
+    }
+    */
+
+
+
     public interface Tab {
         float measureTextWidth();
-        default float measureTextWidth(float textSizeDp) { return measureTextWidth(); }
-        default void setTextSizeDp(float textSizeDp) {}
     }
 
 
@@ -174,7 +219,7 @@ public class MainTabsLayout extends AnimatedLinearLayout {
     private int visibleChildCount;
     private int biggestTabTextWidth;
 
-    private void measureTabTexts(float textSizeDp) {
+    private void measureTabTexts() {
         final int childCount = getChildCount();
         if (tabsTextWidth == null || tabsTextWidth.length < childCount) {
             tabsTextWidth = new float[childCount];
@@ -196,7 +241,7 @@ public class MainTabsLayout extends AnimatedLinearLayout {
 
             final float tabWidth;
             if (child instanceof MainTabsLayout.Tab) {
-                tabWidth = ((MainTabsLayout.Tab) child).measureTextWidth(textSizeDp);
+                tabWidth = ((MainTabsLayout.Tab) child).measureTextWidth();
             } else {
                 tabWidth = 0;
             }
@@ -208,16 +253,6 @@ public class MainTabsLayout extends AnimatedLinearLayout {
 
         biggestTabTextWidth = (int) Math.ceil(maxTabWidthF);
         visibleChildCount = index;
-    }
-
-    private void applyPassTextSize(int pass) {
-        final float textSizeDp = PASS_TEXT_SIZES_DP[pass];
-        for (int a = 0, N = getChildCount(); a < N; a++) {
-            final View child = getChildAt(a);
-            if (child instanceof MainTabsLayout.Tab) {
-                ((MainTabsLayout.Tab) child).setTextSizeDp(textSizeDp);
-            }
-        }
     }
 
     @Override

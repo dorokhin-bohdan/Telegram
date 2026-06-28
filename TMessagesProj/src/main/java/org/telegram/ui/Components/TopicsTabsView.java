@@ -445,7 +445,6 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
             sideMenuBackgroundDrawable.draw(canvas);
         }
         if (topTabsContainer.getVisibility() == VISIBLE) {
-            topMenuBackgroundDrawable.setAlpha((int) (255 * topTabsContainer.getAlpha()));
             topMenuBackgroundDrawable.setBounds(
                     0, (int) topTabsContainer.getTranslationY(),
                     getMeasuredWidth(), (int) (topTabsContainer.getTranslationY() + dp(TOP_TABS_HEIGHT + 7 + 7)));
@@ -575,12 +574,12 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
     }
 
     private void checkUi_topicsVerticalPosition() {
-        topTabsContainer.setAlpha(lerp(1.0f, 0f, sidemenuT));
+        topTabsContainer.setAlpha(lerp(1.0f, 0.85f, sidemenuT));
         topTabsContainer.setVisibility(((1f - sidemenuT) * animatorTopicsVisibility.getFloatValue()) > 0 ? View.VISIBLE : View.GONE);
         if (topicBottom) {
             topTabsContainer.setTranslationY(getMeasuredHeight() - dp(TOP_TABS_HEIGHT + 7 + 7) - sideMenuBackgroundMarginBottom + lerp(dp(TOP_TABS_HEIGHT + 7), 0, getTabsVisibility(Position.BOTTOM)));
         } else {
-            topTabsContainer.setTranslationY(sideMenuBackgroundMarginTop + lerp(-dp(TOP_TABS_HEIGHT + 7), 0, getTabsVisibility(Position.TOP)));
+            topTabsContainer.setTranslationY(lerp(-dp(TOP_TABS_HEIGHT + 7), 0, getTabsVisibility(Position.TOP)));
         }
     }
 
