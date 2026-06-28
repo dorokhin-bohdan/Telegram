@@ -159,10 +159,6 @@ public class ActionBarMenu extends LinearLayout {
     }
 
     public LazyItem lazilyAddItem(int id, Drawable drawable, Theme.ResourcesProvider resourcesProvider) {
-        return lazilyAddItem(id, 0, null, isActionMode ? parentActionBar.itemsActionModeBackgroundColor : parentActionBar.itemsBackgroundColor, drawable, dp(48), null, resourcesProvider);
-    }
-
-    public LazyItem lazilyAddItem(int id, Drawable drawable, Theme.ResourcesProvider resourcesProvider) {
         return lazilyAddItem(id, 0, null, isActionMode ? parentActionBar.itemsActionModeBackgroundColor : parentActionBar.itemsBackgroundColor, drawable, AndroidUtilities.dp(48), null, resourcesProvider);
     }
 

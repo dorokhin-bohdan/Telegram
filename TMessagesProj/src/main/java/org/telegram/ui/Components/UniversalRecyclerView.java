@@ -43,58 +43,58 @@ public class UniversalRecyclerView extends RecyclerListView {
     }
 
     public UniversalRecyclerView(
-        BaseFragment fragment,
-        Utilities.Callback2<ArrayList<UItem>, UniversalAdapter> fillItems,
-        Utilities.Callback5<UItem, View, Integer, Float, Float> onClick,
-        Utilities.Callback5Return<UItem, View, Integer, Float, Float, Boolean> onLongClick
+            BaseFragment fragment,
+            Utilities.Callback2<ArrayList<UItem>, UniversalAdapter> fillItems,
+            Utilities.Callback5<UItem, View, Integer, Float, Float> onClick,
+            Utilities.Callback5Return<UItem, View, Integer, Float, Float, Boolean> onLongClick
     ) {
         this(
-            fragment.getContext(),
-            fragment.getCurrentAccount(),
-            fragment.getClassGuid(),
-            fillItems,
-            onClick,
-            onLongClick,
-            fragment.getResourceProvider()
+                fragment.getContext(),
+                fragment.getCurrentAccount(),
+                fragment.getClassGuid(),
+                fillItems,
+                onClick,
+                onLongClick,
+                fragment.getResourceProvider()
         );
     }
 
     public UniversalRecyclerView(
-        Context context,
-        int currentAccount,
-        int classGuid,
-        Utilities.Callback2<ArrayList<UItem>, UniversalAdapter> fillItems,
-        Utilities.Callback5<UItem, View, Integer, Float, Float> onClick,
-        Utilities.Callback5Return<UItem, View, Integer, Float, Float, Boolean> onLongClick,
-        Theme.ResourcesProvider resourcesProvider
+            Context context,
+            int currentAccount,
+            int classGuid,
+            Utilities.Callback2<ArrayList<UItem>, UniversalAdapter> fillItems,
+            Utilities.Callback5<UItem, View, Integer, Float, Float> onClick,
+            Utilities.Callback5Return<UItem, View, Integer, Float, Float, Boolean> onLongClick,
+            Theme.ResourcesProvider resourcesProvider
     ) {
         this(context, currentAccount, classGuid, false, fillItems, onClick, onLongClick, resourcesProvider);
     }
 
     public UniversalRecyclerView(
-        Context context,
-        int currentAccount,
-        int classGuid,
-        boolean dialog,
-        Utilities.Callback2<ArrayList<UItem>, UniversalAdapter> fillItems,
-        Utilities.Callback5<UItem, View, Integer, Float, Float> onClick,
-        Utilities.Callback5Return<UItem, View, Integer, Float, Float, Boolean> onLongClick,
-        Theme.ResourcesProvider resourcesProvider
+            Context context,
+            int currentAccount,
+            int classGuid,
+            boolean dialog,
+            Utilities.Callback2<ArrayList<UItem>, UniversalAdapter> fillItems,
+            Utilities.Callback5<UItem, View, Integer, Float, Float> onClick,
+            Utilities.Callback5Return<UItem, View, Integer, Float, Float, Boolean> onLongClick,
+            Theme.ResourcesProvider resourcesProvider
     ) {
         this(context, currentAccount, classGuid, dialog, fillItems, onClick, onLongClick, resourcesProvider, UItem.MAX_SPAN_COUNT, LinearLayoutManager.VERTICAL);
     }
 
     public UniversalRecyclerView(
-        Context context,
-        int currentAccount,
-        int classGuid,
-        boolean dialog,
-        Utilities.Callback2<ArrayList<UItem>, UniversalAdapter> fillItems,
-        Utilities.Callback5<UItem, View, Integer, Float, Float> onClick,
-        Utilities.Callback5Return<UItem, View, Integer, Float, Float, Boolean> onLongClick,
-        Theme.ResourcesProvider resourcesProvider,
-        int spansCount,
-        int orientation
+            Context context,
+            int currentAccount,
+            int classGuid,
+            boolean dialog,
+            Utilities.Callback2<ArrayList<UItem>, UniversalAdapter> fillItems,
+            Utilities.Callback5<UItem, View, Integer, Float, Float> onClick,
+            Utilities.Callback5Return<UItem, View, Integer, Float, Float, Boolean> onLongClick,
+            Theme.ResourcesProvider resourcesProvider,
+            int spansCount,
+            int orientation
     ) {
         super(context, resourcesProvider);
 
@@ -170,21 +170,6 @@ public class UniversalRecyclerView extends RecyclerListView {
                 if (hasSections()) invalidate();
                 onLayoutUpdate();
             }
-            @Override
-            protected void onRemoveAnimationUpdate(ViewHolder holder) {
-                super.onRemoveAnimationUpdate(holder);
-                if (hasSections()) invalidate();
-            }
-            @Override
-            protected void onAddAnimationUpdate(ViewHolder holder) {
-                super.onAddAnimationUpdate(holder);
-                if (hasSections()) invalidate();
-            }
-            @Override
-            protected void onChangeAnimationUpdate(ViewHolder holder) {
-                super.onChangeAnimationUpdate(holder);
-                if (hasSections()) invalidate();
-            }
         };
         itemAnimator.setSupportsChangeAnimations(false);
         itemAnimator.setDelayAnimations(false);
@@ -247,8 +232,8 @@ public class UniversalRecyclerView extends RecyclerListView {
     private boolean reorderingOnOtherAxis;
     private boolean reorderingAllowed;
     public void listenReorder(
-        Utilities.Callback2<Integer, ArrayList<UItem>> onReordered,
-        boolean otherAxis
+            Utilities.Callback2<Integer, ArrayList<UItem>> onReordered,
+            boolean otherAxis
     ) {
         reorderingOnOtherAxis = otherAxis;
         itemTouchHelper = new ItemTouchHelper(new TouchHelperCallback());
@@ -396,15 +381,15 @@ public class UniversalRecyclerView extends RecyclerListView {
     }
     public void setSections(int padding, float roundRadius, boolean topPadding) {
         super.setSections(
-            view -> {
-                if (view.getParent() != this) return false;
-                final ViewHolder viewHolder = getChildViewHolder(view);
-                return !UniversalAdapter.isShadow(viewHolder.getItemViewType());
-            },
-            UniversalAdapter::isShadow,
-            padding, roundRadius,
-            super::drawBackgroundRect,
-            topPadding
+                view -> {
+                    if (view.getParent() != this) return false;
+                    final ViewHolder viewHolder = getChildViewHolder(view);
+                    return !UniversalAdapter.isShadow(viewHolder.getItemViewType());
+                },
+                UniversalAdapter::isShadow,
+                padding, roundRadius,
+                super::drawBackgroundRect,
+                topPadding
         );
     }
 }
