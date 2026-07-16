@@ -39,6 +39,8 @@ jobs:
           ndk-version: r23c
           link-to-sdk: true
       - name: Build.
+        env:
+          ORG_GRADLE_PROJECT_APP_PACKAGE: ${{ vars.ORG_GRADLE_PROJECT_APP_PACKAGE }}
         run: |
           ###
           vars=gradle.properties
@@ -51,6 +53,7 @@ jobs:
           echo "RELEASE_STORE_PASSWORD=${{ secrets.KEYSTORE_PASS }}" >> $vars
           echo "GOOGLE_AUTH_CLIENT_ID=${{ secrets.GOOGLE_AUTH_CLIENT_ID }}" >> $vars
           echo "MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}" >> $vars
+          echo "ORG_GRADLE_PROJECT_APP_PACKAGE=${{ vars.ORG_GRADLE_PROJECT_APP_PACKAGE }}" >> $vars
 
           # Decode google-services.json
           echo "${{ secrets.GOOGLE_SERVICES }}" | base64 -d > TMessagesProj_App/google-services.json
