@@ -2022,7 +2022,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private boolean editing;
     private boolean fancyShadows;
     private MessageObject currentMessageObject;
-    private VideoAds ads;
     private ArrayList<VideoPlayer.Quality> currentPlayingVideoQualityFiles;
     private Uri currentPlayingVideoFile;
     private EditState editState = new EditState();
@@ -5155,10 +5154,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     }
                     closePhoto(false, false);
                     currentMessageObject = null;
-                    if (ads != null) {
-                        ads.stop();
-                        ads = null;
-                    }
                 } else if (id == gallery_menu_create_sticker) {
                     if (parentFragment == null || placeProvider == null) return;
                     if (currentMessageObject == null || currentMessageObject.messageOwner == null) return;
@@ -10134,9 +10129,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         if (videoPlayer == null && (photoViewerWebView == null || !photoViewerWebView.isControllable())) {
             return;
         }
-        if (ads != null) {
-            ads.setWaitingPaused(!playWhenReady || playbackState != ExoPlayer.STATE_READY);
-        }
         if (photoViewerWebView != null && photoViewerWebView.isControllable() && !playWhenReady) {
             toggleActionBar(true, true);
         }
@@ -13913,10 +13905,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         avatarsArr.clear();
         secureDocuments.clear();
         imagesArrLocals.clear();
-        if (ads != null) {
-            ads.stop();
-            ads = null;
-        }
+
         if (blurManager != null) {
             blurManager.resetBitmap();
         }
@@ -15655,28 +15644,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             sameImage = init && currentMessageObject != null && currentMessageObject.getId() == newMessageObject.getId();
             if (sameImage) {
                 newMessageObject.putInDownloadsStore = currentMessageObject.putInDownloadsStore;
-            }
-            if (ads == null || newMessageObject == null || currentMessageObject != null && currentMessageObject.getDialogId() != newMessageObject.getDialogId()) {
-                if (ads != null) {
-                    ads.stop();
-                    ads = null;
-                }
-                if (newMessageObject != null) {
-                    ads = VideoAds.make(newMessageObject.currentAccount, newMessageObject.getDialogId(), newMessageObject.getId(), BulletinFactory.of(containerView, resourcesProvider));
-                    ads.setWaitingPaused(videoPlayer == null || videoPlayer.isPlaying() && videoPlayer.getPlaybackState() == ExoPlayer.STATE_READY);
-                    ads.setPauseOnPopupCallback(() -> {
-                        if (ads.isPopupShown()) {
-                            ads.videoWasPlaying = videoPlayer == null ? true : videoPlayer.isPlaying();
-                            if (videoPlayer != null) {
-                                videoPlayer.pause();
-                            }
-                        } else {
-                            if (videoPlayer != null && ads.videoWasPlaying) {
-                                videoPlayer.play();
-                            }
-                        }
-                    });
-                }
             }
             currentMessageObject = newMessageObject;
             if (newMessageObject != null) {
@@ -18672,10 +18639,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         currentPageBlock = null;
         currentPathObject = null;
         dialogPhotos = null;
-        if (ads != null) {
-            ads.stop();
-            ads = null;
-        }
+
         if (videoPlayerControlFrameLayout != null) {
             setVideoPlayerControlVisible(false, false);
         }
