@@ -9,6 +9,8 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
       - name: Sync fork
         uses: ./.github/actions/sync-fork
         with:
