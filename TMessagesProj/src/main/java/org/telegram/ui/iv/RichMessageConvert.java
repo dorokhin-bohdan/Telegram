@@ -385,9 +385,7 @@ public class RichMessageConvert {
                 i = j;
             } else if (isQuoteLeaf(r.block)) {
                 final SpannableStringBuilder q = new SpannableStringBuilder(RichTextStyle.toSpannable(r.block.text, r.block));
-                final boolean collapsed = r.block instanceof TL_iv.pageBlockBlockquote
-                        && ((TL_iv.pageBlockBlockquote) r.block).collapsed;
-                if (q.length() > 0) QuoteSpan.putQuote(q, 0, q.length(), collapsed);
+                if (q.length() > 0) QuoteSpan.putQuote(q, 0, q.length(), false);
                 units.add(q);
                 i++;
             } else {

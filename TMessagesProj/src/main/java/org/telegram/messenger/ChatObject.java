@@ -1996,7 +1996,7 @@ public class ChatObject {
             return false;
         }
 
-        final TLRPC.ChatFull communityFull = MessagesController.getInstance(currentAccount).getChatFull(communityId);
+        final TLRPC.ChatFull communityFull = MessagesController.getInstance(currentAccount).getChatFull(-dialogId);
         if (communityFull == null || communityFull.linked_peers == null) {
             return false;
         }

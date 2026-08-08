@@ -42,7 +42,6 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.Components.ActivityWindowEmptyBackgroundDrawable;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.PasscodeView;
@@ -76,7 +75,7 @@ public class ExternalActionActivity extends Activity implements INavigationLayou
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setTheme(R.style.Theme_TMessages);
-        getWindow().setBackgroundDrawable(new ActivityWindowEmptyBackgroundDrawable());
+        getWindow().setBackgroundDrawableResource(R.drawable.transparent);
         if (!SharedConfig.passcodeHash.isEmpty() && !SharedConfig.allowScreenCapture) {
             try {
                 getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);

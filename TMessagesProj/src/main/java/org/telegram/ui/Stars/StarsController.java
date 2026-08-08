@@ -30,7 +30,6 @@ import org.telegram.SQLite.SQLiteDatabase;
 import org.telegram.SQLite.SQLitePreparedStatement;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.AppGlobalConfig;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BillingController;
 import org.telegram.messenger.BirthdayController;
@@ -744,18 +743,6 @@ public class StarsController {
         }, 0).show();
     }
 
-    private boolean isInvoiceBillingDisabled(TLRPC.InputPeer purposePeer) {
-        return AppGlobalConfig.getInstance(currentAccount).starsSpendTopUpInvoiceDisabled.get() && purposePeer != null;
-    }
-
-    public boolean canBuy(TLRPC.InputPeer purposePeer) {
-        if (purposePeer != null && isInvoiceBillingDisabled(purposePeer)) {
-            return BillingController.getInstance().isReady();
-        }
-
-        return true;
-    }
-
     public void buy(
         Activity activity,
         TL_stars.TL_starsTopupOption option,
@@ -776,8 +763,7 @@ public class StarsController {
             return;
         }
 
-        final boolean isInvoiceBillingDisabled = isInvoiceBillingDisabled(purposePeer);
-        if ((BuildVars.useInvoiceBilling() || !BillingController.getInstance().isReady()) && !isInvoiceBillingDisabled) {
+        if (BuildVars.useInvoiceBilling() || !BillingController.getInstance().isReady()) {
             final TLRPC.TL_inputStorePaymentStarsTopup purpose = new TLRPC.TL_inputStorePaymentStarsTopup();
             purpose.stars = option.stars;
             purpose.amount = option.amount;
@@ -841,13 +827,6 @@ public class StarsController {
                 }
             }));
 
-            return;
-        }
-
-        if (!BillingController.getInstance().isReady()) {
-            if (whenDone != null) {
-                whenDone.run(false, "INVOICE DISABLED");
-            }
             return;
         }
 
