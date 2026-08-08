@@ -186,6 +186,9 @@ public class MediaCodecVideoConvertor {
 
                     ByteBuffer[] encoderOutputBuffers = null;
                     ByteBuffer[] encoderInputBuffers = null;
+                    if (Build.VERSION.SDK_INT < 21) {
+                        encoderOutputBuffers = encoder.getOutputBuffers();
+                    }
 
                     boolean firstEncode = true;
 
@@ -229,6 +232,9 @@ public class MediaCodecVideoConvertor {
                             if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                                 encoderOutputAvailable = false;
                             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                                if (Build.VERSION.SDK_INT < 21) {
+                                    encoderOutputBuffers = encoder.getOutputBuffers();
+                                }
                             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                                 MediaFormat newFormat = encoder.getOutputFormat();
                                 if (BuildVars.LOGS_ENABLED) {
@@ -246,7 +252,11 @@ public class MediaCodecVideoConvertor {
                                 throw new RuntimeException("unexpected result from encoder.dequeueOutputBuffer: " + encoderStatus);
                             } else {
                                 ByteBuffer encodedData;
-                                encodedData = encoder.getOutputBuffer(encoderStatus);
+                                if (Build.VERSION.SDK_INT < 21) {
+                                    encodedData = encoderOutputBuffers[encoderStatus];
+                                } else {
+                                    encodedData = encoder.getOutputBuffer(encoderStatus);
+                                }
                                 if (encodedData == null) {
                                     throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");
                                 }
@@ -464,7 +474,7 @@ public class MediaCodecVideoConvertor {
                             MediaFormat outputFormat = MediaFormat.createVideoFormat(outputMimeType, w, h);
                             outputFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
                             outputFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
-                            if (isAvatar) {
+                            if (isAvatar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 // prevent case when result video max 2MB
                                 outputFormat.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR);
                             }
@@ -523,8 +533,8 @@ public class MediaCodecVideoConvertor {
                                 );
                             } else if (!isRound && Math.max(resultHeight, resultHeight) / (float) Math.max(originalHeight, originalWidth) < 0.9f) {
                                 outputSurface.changeFragmentShader(
-                                        createFragmentShader(originalWidth, originalHeight, resultWidth, resultHeight, true, 8, rotationValue == 90 || rotationValue == 270),
-                                        createFragmentShader(originalWidth, originalHeight, resultWidth, resultHeight, false, 8, rotationValue == 90 || rotationValue == 270),
+                                        createFragmentShader(originalWidth, originalHeight, resultWidth, resultHeight, true, isStory ? 0 : 3),
+                                        createFragmentShader(originalWidth, originalHeight, resultWidth, resultHeight, false, isStory ? 0 : 3),
                                         false
                                 );
                             }
@@ -535,6 +545,10 @@ public class MediaCodecVideoConvertor {
                             ByteBuffer[] decoderInputBuffers = null;
                             ByteBuffer[] encoderOutputBuffers = null;
                             ByteBuffer[] encoderInputBuffers = null;
+                            if (Build.VERSION.SDK_INT < 21) {
+                                decoderInputBuffers = decoder.getInputBuffers();
+                                encoderOutputBuffers = encoder.getOutputBuffers();
+                            }
 
                             int maxBufferSize = 0;
 
@@ -623,7 +637,11 @@ public class MediaCodecVideoConvertor {
                                         int inputBufIndex = decoder.dequeueInputBuffer(MEDIACODEC_TIMEOUT_DEFAULT);
                                         if (inputBufIndex >= 0) {
                                             ByteBuffer inputBuf;
-                                            inputBuf = decoder.getInputBuffer(inputBufIndex);
+                                            if (Build.VERSION.SDK_INT < 21) {
+                                                inputBuf = decoderInputBuffers[inputBufIndex];
+                                            } else {
+                                                inputBuf = decoder.getInputBuffer(inputBufIndex);
+                                            }
                                             int chunkSize = extractor.readSampleData(inputBuf, 0);
                                             if (chunkSize < 0) {
                                                 decoder.queueInputBuffer(inputBufIndex, 0, 0, 0L, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
@@ -642,6 +660,10 @@ public class MediaCodecVideoConvertor {
                                             }
                                         }
                                         info.size = extractor.readSampleData(audioBuffer, 0);
+                                        if (Build.VERSION.SDK_INT < 21) {
+                                            audioBuffer.position(0);
+                                            audioBuffer.limit(info.size);
+                                        }
                                         if (info.size >= 0) {
                                             info.presentationTimeUs = extractor.getSampleTime();
                                             extractor.advance();
@@ -682,6 +704,9 @@ public class MediaCodecVideoConvertor {
                                     if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                                         encoderOutputAvailable = false;
                                     } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                                        if (Build.VERSION.SDK_INT < 21) {
+                                            encoderOutputBuffers = encoder.getOutputBuffers();
+                                        }
                                     } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                                         MediaFormat newFormat = encoder.getOutputFormat();
                                         if (videoTrackIndex == -5 && newFormat != null) {
@@ -696,7 +721,11 @@ public class MediaCodecVideoConvertor {
                                         throw new RuntimeException("unexpected result from encoder.dequeueOutputBuffer: " + encoderStatus);
                                     } else {
                                         ByteBuffer encodedData;
-                                        encodedData = encoder.getOutputBuffer(encoderStatus);
+                                        if (Build.VERSION.SDK_INT < 21) {
+                                            encodedData = encoderOutputBuffers[encoderStatus];
+                                        } else {
+                                            encodedData = encoder.getOutputBuffer(encoderStatus);
+                                        }
                                         if (encodedData == null) {
                                             throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");
                                         }
@@ -1194,6 +1223,10 @@ public class MediaCodecVideoConvertor {
                     muxerTrackIndex = -1;
                 }
                 if (muxerTrackIndex != -1) {
+                    if (Build.VERSION.SDK_INT < 21) {
+                        buffer.position(0);
+                        buffer.limit(info.size);
+                    }
                     if (index != audioTrackIndex) {
                         byte[] array = buffer.array();
                         if (array != null) {
@@ -1304,118 +1337,52 @@ public class MediaCodecVideoConvertor {
         }
     }
 
-    private static String glslFloat(float value) {
-        // Avoid locale-dependent formatting (comma decimal separator) and scientific notation,
-        // which some GLSL ES compilers reject.
-        boolean negative = value < 0;
-        if (negative) {
-            value = -value;
-        }
-        long scaled = Math.round(value * 1000000f); // 6 decimal places
-        long intPart = scaled / 1000000L;
-        long fracPart = scaled % 1000000L;
-
-        StringBuilder sb = new StringBuilder();
-        if (negative) {
-            sb.append('-');
-        }
-        sb.append(intPart);
-        sb.append('.');
-        String fracStr = String.valueOf(fracPart);
-        for (int i = fracStr.length(); i < 6; i++) {
-            sb.append('0');
-        }
-        sb.append(fracStr);
-        return sb.toString();
-    }
-
     private static String createFragmentShader(
             final int srcWidth,
             final int srcHeight,
             final int dstWidth,
-            final int dstHeight,
-            boolean external,
-            int maxSamplesPerAxis,
-            boolean isRotated
-    ) {
-        int sourceAlignedDstWidth = isRotated ? dstHeight : dstWidth;
-        int sourceAlignedDstHeight = isRotated ? dstWidth : dstHeight;
+            final int dstHeight, boolean external, int maxKernelRadius) {
 
-        float ratioX = (float) srcWidth / (float) sourceAlignedDstWidth;
-        float ratioY = (float) srcHeight / (float) sourceAlignedDstHeight;
-
-        int samplesX = Math.max(1, Math.round(ratioX));
-        int samplesY = Math.max(1, Math.round(ratioY));
-
-        if (SharedConfig.deviceIsAverage()) {
-            samplesX = 1;
-            samplesY = 1;
+        final float kernelSize = Utilities.clamp((float) (Math.max(srcWidth, srcHeight) / (float) Math.max(dstHeight, dstWidth)) * 0.8f, 2f, 1f);
+        int kernelRadius = (int) kernelSize;
+        if (kernelRadius > 1 && SharedConfig.deviceIsAverage()) {
+            kernelRadius = 1;
         }
-        samplesX = Math.min(maxSamplesPerAxis, samplesX);
-        samplesY = Math.min(maxSamplesPerAxis, samplesY);
-
-        float offsetX = -(samplesX - 1) / 2f;
-        float offsetY = -(samplesY - 1) / 2f;
-
-        if ((samplesX & 1) == 0) {
-            offsetX += 0.01f;
-        }
-        if ((samplesY & 1) == 0) {
-            offsetY += 0.01f;
-        }
-
-        float weightsum = samplesX * samplesY;
-
-        FileLog.d(
-                "source size " + srcWidth + "x" + srcHeight
-                        + "    dest size " + dstWidth + "x" + dstHeight
-                        + "   rotated " + isRotated
-                        + "   samples " + samplesX + "x" + samplesY
-        );
-
-        String offsetXStr = glslFloat(offsetX);
-        String offsetYStr = glslFloat(offsetY);
-        String weightsumStr = glslFloat(weightsum);
-        String pixelSizeXStr = glslFloat(1f / srcWidth);
-        String pixelSizeYStr = glslFloat(1f / srcHeight);
-
+        kernelRadius = Math.min(maxKernelRadius, kernelRadius);
+        FileLog.d("source size " + srcWidth + "x" + srcHeight + "    dest size " + dstWidth + dstHeight + "   kernelRadius " + kernelRadius);
         if (external) {
             return "#extension GL_OES_EGL_image_external : require\n" +
-                    "precision highp float;\n" +
+                    "precision mediump float;\n" +
                     "varying vec2 vTextureCoord;\n" +
-                    "const float offsetX = " + offsetXStr + ";\n" +
-                    "const float offsetY = " + offsetYStr + ";\n" +
-                    "const float weightsum = " + weightsumStr + ";\n" +
-                    "const float pixelSizeX = " + pixelSizeXStr + ";\n" +
-                    "const float pixelSizeY = " + pixelSizeYStr + ";\n" +
+                    "const float kernel = " + kernelRadius + ".0;\n" +
+                    "const float pixelSizeX = 1.0 / " + srcWidth + ".0;\n" +
+                    "const float pixelSizeY = 1.0 / " + srcHeight + ".0;\n" +
                     "uniform samplerExternalOES sTexture;\n" +
                     "void main() {\n" +
                     "vec3 accumulation = vec3(0);\n" +
-                    "for (int i = 0; i < " + samplesX + "; ++i){\n" +
-                    "   for (int j = 0; j < " + samplesY + "; ++j){\n" +
-                    "       float x = offsetX + float(i);\n" +
-                    "       float y = offsetY + float(j);\n" +
+                    "vec3 weightsum = vec3(0);\n" +
+                    "for (float x = -kernel; x <= kernel; x++){\n" +
+                    "   for (float y = -kernel; y <= kernel; y++){\n" +
                     "       accumulation += texture2D(sTexture, vTextureCoord + vec2(x * pixelSizeX, y * pixelSizeY)).xyz;\n" +
+                    "       weightsum += 1.0;\n" +
                     "   }\n" +
                     "}\n" +
                     "gl_FragColor = vec4(accumulation / weightsum, 1.0);\n" +
                     "}\n";
         } else {
-            return "precision highp float;\n" +
+            return "precision mediump float;\n" +
                     "varying vec2 vTextureCoord;\n" +
-                    "const float offsetX = " + offsetXStr + ";\n" +
-                    "const float offsetY = " + offsetYStr + ";\n" +
-                    "const float weightsum = " + weightsumStr + ";\n" +
-                    "const float pixelSizeX = " + pixelSizeXStr + ";\n" +
-                    "const float pixelSizeY = " + pixelSizeYStr + ";\n" +
+                    "const float kernel = " + kernelRadius + ".0;\n" +
+                    "const float pixelSizeX = 1.0 / " + srcHeight + ".0;\n" +
+                    "const float pixelSizeY = 1.0 / " + srcWidth + ".0;\n" +
                     "uniform sampler2D sTexture;\n" +
                     "void main() {\n" +
                     "vec3 accumulation = vec3(0);\n" +
-                    "for (int i = 0; i < " + samplesX + "; ++i){\n" +
-                    "   for (int j = 0; j < " + samplesY + "; ++j){\n" +
-                    "       float x = offsetX + float(i);\n" +
-                    "       float y = offsetY + float(j);\n" +
+                    "vec3 weightsum = vec3(0);\n" +
+                    "for (float x = -kernel; x <= kernel; x++){\n" +
+                    "   for (float y = -kernel; y <= kernel; y++){\n" +
                     "       accumulation += texture2D(sTexture, vTextureCoord + vec2(x * pixelSizeX, y * pixelSizeY)).xyz;\n" +
+                    "       weightsum += 1.0;\n" +
                     "   }\n" +
                     "}\n" +
                     "gl_FragColor = vec4(accumulation / weightsum, 1.0);\n" +

@@ -702,7 +702,7 @@ public class PreviewView extends FrameLayout {
                         } else {
                             return BitmapFactory.decodeFile(path, opts);
                         }
-                    }, rw, rh, !entry.isVideo ? entry.orientation : 0, false, !entry.isVideo);
+                    }, rw, rh, false, false);
                     setupMatrix[0] = false;
                 }
             }

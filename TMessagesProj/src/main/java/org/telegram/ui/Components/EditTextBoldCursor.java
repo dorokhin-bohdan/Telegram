@@ -29,7 +29,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.Build;
-import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.annotation.Keep;
@@ -1121,40 +1120,14 @@ public class EditTextBoldCursor extends EditTextEffects {
             FileLog.e(e);
         }
         attachedToWindow = getRootView();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            Choreographer60FpsContent.getInstance().addFrameCallback(invalidateCallback, 2);
-        }
+        Choreographer60FpsContent.getInstance().addFrameCallback(invalidateCallback, 2);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         attachedToWindow = null;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            Choreographer60FpsContent.getInstance().removeFrameCallback(invalidateCallback);
-        }
-    }
-
-    private static final String BLINK_CLASS = "android.widget.Editor$Blink";
-
-    @Override
-    public boolean postDelayed(Runnable action, long delayMillis) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                && action != null && delayMillis == 500
-                && BLINK_CLASS.equals(action.getClass().getName())
-                && Looper.myLooper() == Looper.getMainLooper()) {
-            Choreographer60FpsContent.getInstance().addFrameCallbackOnce(action, 2);
-            return true;
-        }
-        return super.postDelayed(action, delayMillis);
-    }
-
-    @Override
-    public boolean removeCallbacks(Runnable action) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            Choreographer60FpsContent.getInstance().removeFrameCallbackOnce(action);
-        }
-        return super.removeCallbacks(action);
+        Choreographer60FpsContent.getInstance().removeFrameCallback(invalidateCallback);
     }
 
     BlurredBackgroundDrawableViewFactory blurredBackgroundDrawableViewFactory;
