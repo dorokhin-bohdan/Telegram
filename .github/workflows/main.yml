@@ -17,7 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          submodules: true
+          submodules: recursive
+          lfs: true
       - name: Free up some disk space.
         uses: jlumbroso/free-disk-space@main
         with:
